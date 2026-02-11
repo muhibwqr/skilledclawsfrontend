@@ -1,0 +1,57 @@
+.dock-outer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.dock-panel {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px 12px;
+  background: rgba(45, 45, 45, 0.9);
+  border: 1px solid rgba(72, 72, 74, 0.9);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.dock-panel:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dock-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #8e8e93;
+  transform-origin: center center;
+}
+
+.dock-item:hover,
+.dock-item:focus-visible {
+  background-color: rgba(58, 58, 60, 0.95);
+  color: #f2f2f7;
+  outline: none;
+}
+
+.dock-item-text {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
