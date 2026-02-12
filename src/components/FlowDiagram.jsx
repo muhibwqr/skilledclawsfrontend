@@ -25,6 +25,16 @@ const SAMPLE_LABELS = {
   E: 'sample',
 }
 
+const API_TIMEOUT_MS = 15000
+
+function fetchWithTimeout(url, options, timeoutMs = API_TIMEOUT_MS) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timeoutId)
+  )
+}
+
 export function FlowDiagram({ inputWord = 'sample' }) {
   const word = (inputWord || 'sample').trim().split(/\s+/)[0] || 'sample'
   const isSample = word.toLowerCase() === 'sample'
@@ -55,7 +65,7 @@ export function FlowDiagram({ inputWord = 'sample' }) {
 
     setLabels(null)
     const url = `${API_BASE}/api/generate`
-    fetch(url, {
+    fetchWithTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ skillName: word }),
@@ -81,7 +91,7 @@ export function FlowDiagram({ inputWord = 'sample' }) {
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err.message)
+          setError(err.name === 'AbortError' ? 'Request timed out' : err.message)
           setLabels({
             A: word,
             B: 'B',
@@ -272,9 +282,13 @@ export function FlowDiagram({ inputWord = 'sample' }) {
   return (
     <div className="flex flex-col gap-2">
       {error && (
-        <p className="text-[#f2a0a0] text-xs">
-          API unreachable ({error}). Diagram shows fallback labels.
-        </p>
+        <div
+          role="alert"
+          className="rounded-xl border border-[#5a3a3a] bg-[#3a2a2a] px-4 py-3 text-[#f2a0a0] text-sm"
+        >
+          <p className="font-medium">API unreachable</p>
+          <p className="mt-1 text-[#f2a0a0]/90">{error}. Diagram shows fallback labels.</p>
+        </div>
       )}
       <div
         ref={containerRef}
