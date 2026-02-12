@@ -66,7 +66,7 @@ export function FlowDiagram({ inputWord = 'sample' }) {
       })
       .then((data) => {
         if (cancelled) return
-        const main = data.mainSkill != null ? String(data.mainSkill) : word
+        const main = data.mainSkill?.name ?? (typeof data.mainSkill === 'string' ? data.mainSkill : word)
         const subs = Array.isArray(data.subSkills) ? data.subSkills.map((s) => (s && typeof s === 'object' && s.name != null ? s.name : String(s))) : []
         const four = [main, ...subs].slice(0, 4)
         while (four.length < 4) four.push('—')

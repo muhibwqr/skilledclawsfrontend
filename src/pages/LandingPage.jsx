@@ -29,15 +29,15 @@ export function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center w-full px-4">
-      <div className="flex flex-col items-center w-full max-w-3xl mx-auto">
+    <div className="min-h-screen flex flex-col items-center justify-center w-full px-6">
+      <div className="flex flex-col items-center w-full max-w-2xl mx-auto">
         {/* Main headline — big and visual */}
-        <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-display font-semibold text-[#f2f2f7] mb-10 tracking-[-0.03em] leading-tight text-center max-w-2xl">
+        <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-display font-semibold text-[#f2f2f7] mb-10 tracking-[-0.03em] leading-tight text-center w-full">
           What do you want to teach your clawdbot?
         </h1>
 
         {/* iMessage-style input with send button inside */}
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+        <form onSubmit={handleSubmit} className="w-full">
           <div className="relative">
             <textarea
               value={input}
@@ -66,7 +66,7 @@ export function LandingPage() {
         </form>
 
         {/* Pills: click to put that text in the input box */}
-        <div className="flex flex-wrap justify-center gap-2 mt-6">
+        <div className="flex flex-wrap justify-center gap-2 mt-6 w-full">
           {PILLS.map(({ id, label }) => (
             <button
               key={id}

@@ -48,7 +48,7 @@ export function PastSkillsPage() {
             past skills files
           </h1>
           <p className="text-[#8e8e93] text-sm mt-0.5">
-            all skills ever generated (from Supabase)
+            all skills ever generated
           </p>
         </div>
       </div>

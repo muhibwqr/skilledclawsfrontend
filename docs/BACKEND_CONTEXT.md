@@ -5,7 +5,7 @@ This frontend is designed to work with the **SkilledClaws** backend from the [mu
 ## Monorepo overview
 
 - **Repo:** https://github.com/muhibwqr/skilledclaws  
-- **Stack:** pnpm + Turborepo, Next.js 14 (apps/web), Hono API (apps/api), shared `@skilledclaws/skills-engine`, `@skilledclaws/ui`, Supabase, Stripe, Mastra agents, Cloudflare R2.
+- **Stack:** pnpm + Turborepo, Next.js 14 (apps/web), Hono API (apps/api), shared `@skilledclaws/skills-engine`, `@skilledclaws/ui`, Stripe, Mastra agents, Cloudflare R2.
 - **Web app:** `http://localhost:3000` (Next.js, Mapbox heatmap, search, checkout).  
 - **API:** `http://localhost:3001` (Hono).
 
@@ -22,9 +22,11 @@ Base URL: `http://localhost:3001` (or set `VITE_API_URL`).
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `POST` | `/api/generate` | Generate skill from a single name. Body: `{ "skillName": "string" }`. Returns `{ success, mainSkill, subSkills, skillIds }`. Use the landing “one word” or diagram input as `skillName`. |
-| `POST` | `/api/similarity/search` | Search skills by text. Body: `{ "query": "string", "limit"?: number, "source"?: "generated" \| "awesome-claude-skills" }`. Returns `{ query, results: [{ id, name, description, source, similarity }] }`. Good for “skill library” or autocomplete. |
-| `GET` | `/api/similarity/:skillId` | Get skills similar to a given skill ID. Query: `limit`, `source`. |
+| `POST` | `/api/generate` | Generate skill from a single name. Body: `{ "skillName": "string" }`. Returns `{ success, mainSkill: { name, description, ... }, subSkills: [{ id, name, ... }], skillIds }`. Use the landing “one word” or diagram input as `skillName`. |
+| `GET` | `/api/skills` | List skills. Query: `limit`, `offset`, `source`. Response: `{ skills: [...], total? }`. |
+| `GET` | `/api/skills/:id/download` | Download skill file as `.md`. |
+| `POST` | `/api/similarity/search` | Search skills by text. Body: `{ "query": "string", "limit"?: number, "source"?: "generated" \| "awesome-claude-skills" }`. Returns `{ query, results: [{ id, name, description, source, similarity }] }`. For future search/autocomplete. |
+| `GET` | `/api/similarity/:skillId` | Get skills similar to a given skill ID. Query: `limit`, `source`. For future "related skills". |
 | `GET` | `/` | Health: `{ name: "skilledclaws-api", status: "ok" }`. |
 
 Other routes in the monorepo: `registerSkills`, `registerExport`, Stripe webhooks, etc. See `apps/api/src/index.ts` and `apps/api/src/routes/`.
@@ -40,7 +42,7 @@ The API is configured for `http://localhost:3000` and `http://127.0.0.1:3000`. I
 
 Backend expects (see monorepo README):
 
-- **API:** `OPENAI_API_KEY`, `STRIPE_*`, `CLOUDFLARE_R2_*`, optional `UPSTASH_REDIS_*`, optional `ANTHROPIC_API_KEY`, Supabase if storing skills.
+- **API:** `OPENAI_API_KEY`, `STRIPE_*`, `CLOUDFLARE_R2_*`, optional `UPSTASH_REDIS_*`, optional `ANTHROPIC_API_KEY`.
 - **Web (Next.js):** `NEXT_PUBLIC_MAPBOX_TOKEN`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
 
 This frontend only needs the API base URL (e.g. `VITE_API_URL=http://localhost:3001`) to call the endpoints above.
