@@ -37,6 +37,13 @@ export function PastSkillsPage() {
 
   const downloadUrl = (id) => `${API_BASE}/api/skills/${id}/download`
 
+  const formatDate = (value) => {
+    if (value == null || value === '') return '—'
+    const t = +new Date(value)
+    if (Number.isNaN(t)) return '—'
+    return new Date(value).toLocaleDateString()
+  }
+
   return (
     <div className="flex flex-col w-full max-w-3xl mx-auto px-4 pt-12 pb-8">
       <div className="flex items-center gap-3 mb-8">
@@ -87,9 +94,9 @@ export function PastSkillsPage() {
             {total} skill{total !== 1 ? 's' : ''} generated
           </p>
           <ul className="space-y-3">
-            {skills.map((skill) => (
+            {skills.map((skill, index) => (
               <li
-                key={skill.id}
+                key={skill.id ?? `skill-${index}`}
                 className="flex items-center justify-between gap-4 p-4 rounded-xl bg-[#3a3a3c] border border-[#48484a] hover:bg-[#48484a] transition-colors"
               >
                 <div className="min-w-0 flex-1">
@@ -98,19 +105,25 @@ export function PastSkillsPage() {
                     <p className="text-[#8e8e93] text-sm mt-0.5 line-clamp-2">{skill.description}</p>
                   )}
                   <p className="text-[#8e8e93] text-xs mt-1">
-                    {skill.source || 'generated'} · {skill.created_at ? new Date(skill.created_at).toLocaleDateString() : '—'}
+                    {skill.source || 'generated'} · {formatDate(skill.created_at)}
                   </p>
                 </div>
-                <a
-                  href={downloadUrl(skill.id)}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#48484a] border border-[#636366] text-[14px] text-[#f2f2f7] hover:bg-[#636366] transition-colors"
-                >
-                  <RiDownloadLine className="w-4 h-4" />
-                  download
-                </a>
+                {skill.id != null ? (
+                  <a
+                    href={downloadUrl(skill.id)}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#48484a] border border-[#636366] text-[14px] text-[#f2f2f7] hover:bg-[#636366] transition-colors"
+                  >
+                    <RiDownloadLine className="w-4 h-4" />
+                    download
+                  </a>
+                ) : (
+                  <span className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#3a3a3c] border border-[#48484a] text-[14px] text-[#8e8e93] cursor-not-allowed" aria-hidden>
+                    download
+                  </span>
+                )}
               </li>
             ))}
           </ul>

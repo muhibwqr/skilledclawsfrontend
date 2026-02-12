@@ -189,10 +189,35 @@ export function FlowDiagram({ inputWord = 'sample' }) {
     setModelReady(true)
   }, [engine, labels, additionalSkills])
 
+  // Repaint and zoom-to-fit when container/canvas is ready so diagram is visible
+  useEffect(() => {
+    if (!engine || !modelReady || !containerRef.current) return
+    let fitTimer
+    const timer = requestAnimationFrame(() => {
+      engine.repaintCanvas()
+      // Allow canvas to be attached and laid out, then fit diagram in view
+      fitTimer = setTimeout(() => {
+        if (engine.getCanvas?.()) {
+          try {
+            engine.zoomToFit?.()
+            engine.repaintCanvas()
+          } catch (_) {
+            // zoomToFit may throw if dimensions not ready
+          }
+        }
+      }, 100)
+    })
+    return () => {
+      cancelAnimationFrame(timer)
+      if (fitTimer) clearTimeout(fitTimer)
+    }
+  }, [engine, modelReady])
+
   if (!engine) {
     return (
-      <div className="w-full h-[400px] flex items-center justify-center text-[#8e8e93] text-sm">
-        Loading diagram…
+      <div className="w-full h-[400px] flex flex-col items-center justify-center gap-3 text-[#8e8e93] text-sm">
+        <div className="w-8 h-8 border-2 border-[#48484a] border-t-[#f2f2f7] rounded-full animate-spin" />
+        <span>Loading</span>
       </div>
     )
   }
@@ -201,15 +226,16 @@ export function FlowDiagram({ inputWord = 'sample' }) {
     return (
       <div className="w-full h-[400px] flex flex-col items-center justify-center gap-3 text-[#8e8e93] text-sm">
         <div className="w-8 h-8 border-2 border-[#48484a] border-t-[#f2f2f7] rounded-full animate-spin" />
-        <span>Calling SkilledClaws API…</span>
+        <span>Loading</span>
       </div>
     )
   }
 
   if (!modelReady) {
     return (
-      <div className="w-full h-[400px] flex items-center justify-center text-[#8e8e93] text-sm">
-        Preparing diagram…
+      <div className="w-full h-[400px] flex flex-col items-center justify-center gap-3 text-[#8e8e93] text-sm">
+        <div className="w-8 h-8 border-2 border-[#48484a] border-t-[#f2f2f7] rounded-full animate-spin" />
+        <span>Loading</span>
       </div>
     )
   }
@@ -252,7 +278,7 @@ export function FlowDiagram({ inputWord = 'sample' }) {
       )}
       <div
         ref={containerRef}
-        className="flow-diagram-container w-full h-[400px] rounded-lg overflow-hidden bg-[#f8f9fa] border border-[#dee2e6]"
+        className="flow-diagram-container w-full h-[400px] rounded-lg overflow-visible bg-[#f8f9fa] border border-[#dee2e6]"
       >
         <CanvasWidget engine={engine} className="w-full h-full" />
       </div>
@@ -311,7 +337,7 @@ export function FlowDiagram({ inputWord = 'sample' }) {
                   disabled={!addSkillInput.trim() || addSkillSubmitting}
                   className="px-4 py-2 rounded-xl text-sm font-medium bg-[#0a84ff] text-white hover:bg-[#0066cc] transition-colors disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  {addSkillSubmitting ? 'adding…' : 'add'}
+                  {addSkillSubmitting ? 'Loading' : 'add'}
                 </button>
               </div>
             </form>
